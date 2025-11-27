@@ -59,7 +59,8 @@ export default function FiltersPanel({ onFilterChange }: FiltersPanelProps) {
 
     return (
 
-        <div className="bg-white p-6 rounded-xl shadow-md mb-8 border border-gray-300">
+        <div className="bg-white p-6 rounded-xl shadow-md mb-8 border border-gray-300 overflow-visible">
+
 
 
             <h3 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
