@@ -22,7 +22,7 @@ app.use(cors({
 
         const allowed = [
             "http://localhost:3000",
-            "https://news-dashboard-zeta.vercel.app"
+            "https://news-insight-dashboard.vercel.app"
         ];
 
         if (!origin || allowed.includes(origin)) {
