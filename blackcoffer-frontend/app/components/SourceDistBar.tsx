@@ -17,7 +17,7 @@ export default function SourceDistBar({ filters }: { filters: any }) {
 
     useEffect(() => {
         const query = new URLSearchParams(filters).toString();
-        fetch(`http://localhost:5000/api/insights/agg/source-dist?${query}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/agg/source-dist?${query}`)
             .then((res) => res.json())
             .then((data) => setData(data))
             .catch((err) => console.error(err));

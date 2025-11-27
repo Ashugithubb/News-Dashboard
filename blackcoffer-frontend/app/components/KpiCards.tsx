@@ -16,7 +16,7 @@ export default function KpiCards() {
     useEffect(() => {
         async function loadStats() {
             try {
-                const res = await fetch("http://localhost:5000/api/insights/stats");
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/stats`);
                 const data: StatsResponse = await res.json();
                 setStats(data);
             } catch (err) {

@@ -32,7 +32,7 @@ export default function FiltersPanel({ onFilterChange }: FiltersPanelProps) {
     });
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/insights/filters")
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/filters`)
             .then((res) => res.json())
             .then((data) => setOptions(data))
             .catch((err) => console.error("Failed to load filters:", err));

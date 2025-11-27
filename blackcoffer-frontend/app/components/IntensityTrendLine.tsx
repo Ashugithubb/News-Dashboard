@@ -17,7 +17,7 @@ export default function IntensityTrendLine({ filters }: { filters: any }) {
 
     useEffect(() => {
         const query = new URLSearchParams(filters).toString();
-        fetch(`http://localhost:5000/api/insights/agg/intensity-trend?${query}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/agg/intensity-trend?${query}`)
             .then((res) => res.json())
             .then((data) => setData(data))
             .catch((err) => console.error(err));
