@@ -2,17 +2,6 @@
 
 The Agentic Newsletter Backend is a high-performance Python orchestration engine designed to automate the lifecycle of technical newsletters. It integrates advanced web scraping, intelligent content filtering, and GPT-powered summarization into a unified FastAPI-driven service.
 
-## 🏗️ Architecture
-
-```mermaid
-graph TD
-    A[Scrapers] -->|Raw Data| B[(PostgreSQL)]
-    B --> C[Pipeline Engine]
-    C -->|Context| D[OpenAI GPT-4o]
-    D -->|Summaries| E[Newsletter Factory]
-    E -->|Drafts| B
-    F[FastAPI] -->|Exposes| B
-```
 
 ## 🛠️ Tech Stack
 
