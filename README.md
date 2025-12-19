@@ -1,95 +1,85 @@
-# Agentic Newsletter - Backend
+# Agentic Intel - Frontend
 
-The Agentic Newsletter Backend is a high-performance Python orchestration engine designed to automate the lifecycle of technical newsletters. It integrates advanced web scraping, intelligent content filtering, and GPT-powered summarization into a unified FastAPI-driven service.
+The frontend for **Agentic Intel**, a next-generation AI newsletter orchestration platform. Built with a focus on rich aesthetics, interactive UX, and seamless AI integration.
 
+## ✨ Features
+
+- **🚀 AI Drafting Suite**: Interactive interface for generating, refining, and styling AI newsletters.
+- **📊 Real-time Dashboard**: Comprehensive overview of publication stats and historical drafts.
+- **✍️ Premium Editor**: Tiptap-powered rich text editor with custom extensions for fonts, colors, and Cloudflare R2 image uploads.
+- **📱 PWA Ready**: Fully installable Progressive Web App with custom install prompts and offline capabilities.
+- **🔐 Secure Auth**: Robust session management and protected routes powered by Supabase.
+- **🎨 Modern UI/UX**: Fluid animations with Framer Motion, sleek dark mode, and responsive layouts.
 
 ## 🛠️ Tech Stack
 
-- **Core Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous, Type-safe)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) with [SQLAlchemy](https://www.sqlalchemy.org/) & [Psycopg2](https://www.psycopg.org/)
-- **AI Engine**: [OpenAI GPT-4o](https://openai.com/) for summarization and tone styling
-- **Data Acquisition**:
-  - **Social**: `PRAW` (Reddit), `Tweepy` (Twitter)
-  - **Web**: `newspaper3k`, `trafilatura`, `Playwright`, `BeautifulSoup4`
-- **Infrastructure**: Docker, Boto3 (Cloudflare R2)
+### Framework & Language
+- **Next.js 15 (App Router)** - React for the modern web.
+- **TypeScript** - For type-safe, maintainable code.
 
-## 📂 Directory Structure
+### State & Logic
+- **Redux Toolkit** - Global state management for news data and UI states.
+- **Supabase SSR** - For authentication and backend interaction.
+- **React Hook Form + Zod** - Type-safe form validation.
+
+### Styling & Animation
+- **Tailwind CSS** - Utility-first CSS framework.
+- **Framer Motion** - High-performance animations and transitions.
+- **Radix UI + Lucide Icons** - High-quality, accessible UI primitives.
+
+### Editor Suite
+- **Tiptap** - Headless editor with custom extensions for:
+  - Font Family & Size
+  - Highlight & Color
+  - Subscript & Superscript
+  - Text Alignment
+  - Image Uploads (Integrated with R2)
+
+## 📂 Project Structure
 
 ```text
-backend/
-├── api/              # FastAPI Application Layer
-│   ├── routers/      # Categorized API endpoints (Sources, Search Terms)
-│   ├── auth.py       # Supabase/JWT Authentication logic
-│   └── main.py       # Main entry point & global endpoints
-├── core/             # Business Logic
-│   └── engine.py     # Newsletter generation & AI orchestration
-├── db/               # Persistence Layer
-│   └── connection.py # Connection pooling & raw SQL execution
-├── pipeline/         # Data Processing
-│   └── pipeline.py   # Transformation of raw scrapes to structured data
-├── scrapers/         # Intelligence Gathering
-│   ├── scraper_articles.py # RSS/Web news extraction
-│   ├── scraper_linkedin.py # LinkedIn automation
-│   ├── scraper_reddit.py   # Subreddit monitoring
-│   └── scraper_reports.py  # PDF/Research extraction
-└── migrations/       # Schema evolution scripts
+src/
+├── app/            # Next.js App Router (Pages, Layouts, API routes)
+├── components/     # UI Components
+│   ├── ui/         # Base Radix+Atomic primitives
+│   ├── dashboard/  # Stats and Hero sections
+│   ├── editor/     # Rich text editor implementation
+│   └── navbar/     # Responsive navigation
+├── store/          # Redux slices and thunks
+├── lib/            # Shared utilities (Supabase client, API helpers)
+├── hooks/          # Custom React hooks
+└── contexts/       # Authentication and Theme contexts
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.10+
-- PostgreSQL
-- OpenAI API Key
+- Node.js 18+
+- npm / yarn / pnpm
 
-### Local Installation
-1. **Initialize Environment**:
+### Installation
+1. Install dependencies:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # venv\Scripts\activate on Windows
-   pip install -r requirements.txt
+   npm install
    ```
 
-2. **Database Setup**:
-   ```bash
-   # Initialize schema
-   python update_db_schema.py
+2. Configure environment:
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   NEXT_PUBLIC_SUPABASE_URL=your_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
    ```
 
-3. **Running the Server**:
+3. Start development:
    ```bash
-   uvicorn backend.api.main:app --reload --port 8000
+   npm run dev
    ```
 
-## 🔌 API Reference
-
-### 👤 Identity & Health
-- `GET /health` - Service status & version
-- `GET /me` - Current session user details
-
-### 🧠 Generation Engine
-- `POST /generate` - Trigger full pipeline (Scrape -> Process -> AI Build)
-- `POST /generate-article-summaries` - AI-build for specific article sets
-- `POST /generate-report-summaries` - Dedicated summarization for PDF/Research data
-
-### 📰 Newsletter Management
-- `GET /newsletters` - Paginated history (Filter by `status=published/draft`)
-- `GET /newsletters/{id}` - Fetch specific newsletter JSON/HTML
-- `POST /api/newsletters/save` - Save manual edits or new drafts
-- `PUT /newsletters/{id}` - Update body, title, or status
-- `DELETE /newsletters/{id}` - Remove newsletter entry
-
-### 🌐 Source & Term Control
-- `GET /sources/` | `POST /sources/` - Manage RSS/Social input feeds
-- `GET /search-terms/` | `POST /search-terms/` - Define keywords for scrapers
-
-### 📊 Intelligence feeds
-- `GET /linkedin-posts` - View processed LinkedIn insights
-- `GET /tweets-from-person` - User-specific Twitter feed
-- `GET /tweets-from-hashtag` - Hashtag-driven Twitter feed
-
-### 🖼️ Storage
-- `POST /api/newsletter/upload-url` - Presigned R2 URL for newsletter assets
-
-## 🔒 Authentication
-All endpoints (except `/health`) require a valid JWT token from Supabase passed in the `Authorization: Bearer <token>` header.
+## 📦 Deployment
+The project is optimized for production builds:
+```bash
+npm run build
+npm run start
+```
+Also supports Dockerized deployments via the provided `Dockerfile`.
