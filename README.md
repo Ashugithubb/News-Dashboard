@@ -1,127 +1,106 @@
-# Agentic Newsletter - Backend Core
+# Agentic Newsletter - Backend
 
-The **Agentic Newsletter Backend** is a high-performance Python orchestration engine designed to automate the lifecycle of technical newsletters. It integrates advanced web scraping, intelligent content filtering, and GPT-powered summarization into a unified FastAPI-driven service.
+The Agentic Newsletter Backend is a high-performance Python orchestration engine designed to automate the lifecycle of technical newsletters. It integrates advanced web scraping, intelligent content filtering, and GPT-powered summarization into a unified FastAPI-driven service.
 
----
-
-## 🏗 Architecture & Data Flow
+## 🏗️ Architecture
 
 ```mermaid
 graph TD
-    A[Modular Scrapers] -->|Extract| B[(PostgreSQL Cluster)]
+    A[Scrapers] -->|Raw Data| B[(PostgreSQL)]
     B --> C[Pipeline Engine]
-    C -->|Context Window| D[OpenAI GPT-4o]
-    D -->|Refined Content| E[Newsletter Factory]
-    E -->|Structured Drafts| B
-    F[FastAPI Layer] -->|Consumes| B
-    G[Next.js UI] <-->|Rest API| F
+    C -->|Context| D[OpenAI GPT-4o]
+    D -->|Summaries| E[Newsletter Factory]
+    E -->|Drafts| B
+    F[FastAPI] -->|Exposes| B
 ```
 
-The system operates on a **Pull-Process-Publish** pattern:
-1.  **Pull**: Scrapers distributed across articles, Reddit, LinkedIn, and PDFs gather raw intelligence.
-2.  **Process**: The pipeline cleanses HTML, resolves tracking links, and deduplicates content.
-3.  **Publish**: AI agents transform raw data into professional, tone-specific newsletter issues.
+## 🛠️ Tech Stack
 
----
+- **Core Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous, Type-safe)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [SQLAlchemy](https://www.sqlalchemy.org/) & [Psycopg2](https://www.psycopg.org/)
+- **AI Engine**: [OpenAI GPT-4o](https://openai.com/) for summarization and tone styling
+- **Data Acquisition**:
+  - **Social**: `PRAW` (Reddit), `Tweepy` (Twitter)
+  - **Web**: `newspaper3k`, `trafilatura`, `Playwright`, `BeautifulSoup4`
+- **Infrastructure**: Docker, Boto3 (Cloudflare R2)
 
-## 🛠 Tech Stack
+## 📂 Directory Structure
 
-- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous, High Performance)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) with [SQLAlchemy](https://www.sqlalchemy.org/) ORM
-- **AI/LLM**: [OpenAI GPT-4o](https://openai.com/index/gpt-4o/) (Custom Prompt Orchestration)
-- **Extraction Engine**: 
-  - [Playwright](https://playwright.dev/) / [Selenium](https://www.selenium.dev/) (Dynamic Content)
-  - [trafilatura](https://trafilatura.readthedocs.io/) (High-precision text extraction)
-  - [newspaper3k](https://newspaper.readthedocs.io/en/latest/) (Metadata & Article parsing)
-- **Social Connectors**: [Tweepy](https://www.tweepy.org/) (X/Twitter), [PRAW](https://praw.readthedocs.io/) (Reddit)
-- **Task Runner**: Native Python async/await orchestration
-
----
-
-## 📂 Internal Directory Walkthrough
-
-```bash
+```text
 backend/
-├── api/             # API Layer (FastAPI)
-│   ├── main.py      # Entry point & Route registration
-│   └── models/      # Request/Response Pydantic schemas
-├── core/            # Business Logic
-│   └── engine.py    # Newsletter generation and AI orchestration
-├── db/              # Persistence Layer
-│   ├── connection.py# SQLAlchemy session management
-│   └── models.py    # Database schema definitions
-├── pipeline/        # Data Pipeline
-│   └── pipeline.py  # Processing logic for scraped content
-├── scrapers/        # Extraction Framework
-│   ├── scraper_articles.py # Generic web article extraction
-│   ├── scraper_linkedin.py # LinkedIn post gathering
-│   ├── scraper_reddit.py   # Subreddit intelligence
-│   └── scraper_pdfs.py     # Research paper processing
-└── tests/           # Quality Assurance (Pytest)
+├── api/              # FastAPI Application Layer
+│   ├── routers/      # Categorized API endpoints (Sources, Search Terms)
+│   ├── auth.py       # Supabase/JWT Authentication logic
+│   └── main.py       # Main entry point & global endpoints
+├── core/             # Business Logic
+│   └── engine.py     # Newsletter generation & AI orchestration
+├── db/               # Persistence Layer
+│   └── connection.py # Connection pooling & raw SQL execution
+├── pipeline/         # Data Processing
+│   └── pipeline.py   # Transformation of raw scrapes to structured data
+├── scrapers/         # Intelligence Gathering
+│   ├── scraper_articles.py # RSS/Web news extraction
+│   ├── scraper_linkedin.py # LinkedIn automation
+│   ├── scraper_reddit.py   # Subreddit monitoring
+│   └── scraper_reports.py  # PDF/Research extraction
+└── migrations/       # Schema evolution scripts
 ```
 
----
+## 🚀 Getting Started
 
-## 🚀 Advanced Setup
+### Prerequisites
+- Python 3.10+
+- PostgreSQL
+- OpenAI API Key
 
-### 1. Environment Preparation
-```bash
-# Initialize virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+### Local Installation
+1. **Initialize Environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
 
-# Install dependencies
-pip install -r requirements.txt
-```
+2. **Database Setup**:
+   ```bash
+   # Initialize schema
+   python update_db_schema.py
+   ```
 
-### 2. Dependency Installation
-The backend requires specific binaries for extraction and NLP:
-```bash
-# Install Playwright browsers (Required for scrapers)
-playwright install chromium
+3. **Running the Server**:
+   ```bash
+   uvicorn backend.api.main:app --reload --port 8000
+   ```
 
-# Download NLTK datasets (Required for text processing)
-python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')"
-```
+## 🔌 API Reference
 
-### 3. Database Migration
-Ensure your PostgreSQL instance is running and your `.env` is configured, then initialize the schema:
-```bash
-python update_db_schema.py
-```
+### 👤 Identity & Health
+- `GET /health` - Service status & version
+- `GET /me` - Current session user details
 
----
+### 🧠 Generation Engine
+- `POST /generate` - Trigger full pipeline (Scrape -> Process -> AI Build)
+- `POST /generate-article-summaries` - AI-build for specific article sets
+- `POST /generate-report-summaries` - Dedicated summarization for PDF/Research data
 
-## 📡 API Reference
+### 📰 Newsletter Management
+- `GET /newsletters` - Paginated history (Filter by `status=published/draft`)
+- `GET /newsletters/{id}` - Fetch specific newsletter JSON/HTML
+- `POST /api/newsletters/save` - Save manual edits or new drafts
+- `PUT /newsletters/{id}` - Update body, title, or status
+- `DELETE /newsletters/{id}` - Remove newsletter entry
 
-| Endpoint | Method | Description |
-| :--- | :--- | :--- |
-| `/health` | `GET` | System health & DB connection status |
-| `/newsletters` | `GET` | Fetch paginated newsletter history |
-| `/generate` | `POST` | Trigger full pipeline (Scrape -> AI -> Save) |
-| `/generate-article-summaries` | `POST` | AI summarization for specific raw items |
-| `/linkedin-posts` | `GET` | Access cached/fresh LinkedIn intelligence |
+### 🌐 Source & Term Control
+- `GET /sources/` | `POST /sources/` - Manage RSS/Social input feeds
+- `GET /search-terms/` | `POST /search-terms/` - Define keywords for scrapers
 
-Full documentation available at `http://localhost:8000/docs` (Swagger UI).
+### 📊 Intelligence feeds
+- `GET /linkedin-posts` - View processed LinkedIn insights
+- `GET /tweets-from-person` - User-specific Twitter feed
+- `GET /tweets-from-hashtag` - Hashtag-driven Twitter feed
 
----
+### 🖼️ Storage
+- `POST /api/newsletter/upload-url` - Presigned R2 URL for newsletter assets
 
-## 🏭 Deployment (Docker)
-
-The backend is optimized for containerized environments:
-
-```bash
-# Build from project root
-docker build -t newsletter-backend -f backend/Dockerfile .
-
-# Run with environment injection
-docker run -p 8000:8000 --env-file .env newsletter-backend
-```
-
----
-
-## 🤝 Development Guidelines
-
-- **Adding Scrapers**: Inherit from the base scraper logic and implement standard error handling for diverse HTML structures.
-- **Prompt Engineering**: AI prompts are located in `backend/core/engine.py`. Test prompt changes against the `tests/` suite before merging.
-- **Logging**: All system events are logged to `newsletter.log`. High-priority errors are piped to `stderr`.
+## 🔒 Authentication
+All endpoints (except `/health`) require a valid JWT token from Supabase passed in the `Authorization: Bearer <token>` header.
